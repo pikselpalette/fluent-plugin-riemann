@@ -53,14 +53,15 @@ class Fluent::RiemannOutput < Fluent::BufferedOutput
       event = {
         :time    => time,
       }
-      event.merge!(@fields)
+      @fields.each { |k, v|
+        event[k.to_sym] = v
+      }
       record.each { |k, v|
         next unless v = remap(v)
         event[:service] = k.gsub(/\./, ' ')
         event[:metric] = v.to_f
         client << event
       }
-
     end
   end
 end
