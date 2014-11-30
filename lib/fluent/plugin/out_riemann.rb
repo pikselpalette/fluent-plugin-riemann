@@ -45,6 +45,8 @@ class Fluent::RiemannOutput < Fluent::BufferedOutput
         data = data.to_f
       elsif data =~ /^\d+$/
         data = data.to_i
+      else
+        data = nil
       end
     end
     data
@@ -59,6 +61,7 @@ class Fluent::RiemannOutput < Fluent::BufferedOutput
         event[k.to_sym] = v
       }
       record.each { |k, v|
+        next unless v = remap(v)
         if @field_from_metric
           spots = k.split('.')
           @field_names.each_with_index do |k, i|
@@ -66,7 +69,7 @@ class Fluent::RiemannOutput < Fluent::BufferedOutput
           end
         end
         event[:service] = k.gsub(/\./, ' ')
-        event[:metric] = remap(v)
+        event[:metric] = v
         client << event
       }
     end
