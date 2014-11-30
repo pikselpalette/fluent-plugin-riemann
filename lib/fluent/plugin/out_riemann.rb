@@ -8,6 +8,7 @@ class Fluent::RiemannOutput < Fluent::BufferedOutput
   config_param :timeout,  :integer, :default => 5
   config_param :protocol, :string,  :default => 'tcp'
   config_param :fields,   :hash,    :default => {}
+  config_param :fields_from_metric,  :bool, :default => false
 
   def initialize
     super
@@ -58,6 +59,12 @@ class Fluent::RiemannOutput < Fluent::BufferedOutput
       }
       record.each { |k, v|
         next unless v = remap(v)
+        if @field_from_metric
+          spots = k.split('.')
+          ['stage', 'stack', 'app', 'instance'].each_with_index do |k, i|
+            event[k] = spots[i]
+          end
+        end
         event[:service] = k.gsub(/\./, ' ')
         event[:metric] = v.to_f
         client << event
