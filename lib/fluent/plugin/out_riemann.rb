@@ -8,7 +8,7 @@ class Fluent::RiemannOutput < Fluent::BufferedOutput
   config_param :timeout,  :integer, :default => 5
   config_param :protocol, :string,  :default => 'tcp'
   config_param :fields,   :hash,    :default => {}
-  config_param :fields_from_metric,  :bool, :default => false
+  config_param :fields_from_metric,  :string, :default => nil
 
   def initialize
     super
@@ -17,6 +17,9 @@ class Fluent::RiemannOutput < Fluent::BufferedOutput
   def configure(c)
     super
 
+    if @fields_from_metric
+      @field_names = @fields_from_metric.split(',')
+    end
   end
 
   def start
@@ -58,7 +61,7 @@ class Fluent::RiemannOutput < Fluent::BufferedOutput
       record.each { |k, v|
         if @field_from_metric
           spots = k.split('.')
-          ['stage', 'stack', 'app', 'instance'].each_with_index do |k, i|
+          @field_names.each_with_index do |k, i|
             event[k] = spots[i]
           end
         end
