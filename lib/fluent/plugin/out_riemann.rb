@@ -66,7 +66,7 @@ class Fluent::RiemannOutput < Fluent::BufferedOutput
           end
         end
         event[:service] = k.gsub(/\./, ' ')
-        event[:metric] = v.to_f
+        event[:metric] = v
         client << event
       }
     end
