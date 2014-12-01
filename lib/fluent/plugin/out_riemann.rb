@@ -68,7 +68,7 @@ class Fluent::RiemannOutput < Fluent::BufferedOutput
             event[k] = spots[i]
           end
         end
-        event[:service] = k.gsub(/\./, ' ')
+        event[:service] = k.gsub(/\./, ' ') unless event[:service]
         event[:metric] = v
         client << event
       }
