@@ -54,20 +54,24 @@ class Fluent::RiemannOutput < Fluent::BufferedOutput
 
   def write(chunk)
     chunk.msgpack_each do |tag, time, record|
-      event = {
-        :time    => time,
-      }
-      @fields.each { |k, v|
-        event[k.to_sym] = v
-      }
       record.each { |k, v|
         next unless v = remap(v)
+
+        event = {
+          :time    => time,
+        }
+
+        @fields.each { |k, v|
+          event[k.to_sym] = v
+        }
+
         if @field_from_metric
           spots = k.split('.')
           @field_names.each_with_index do |k, i|
             event[k] = spots[i]
           end
         end
+
         event[:service] = k.gsub(/\./, ' ') unless event[:service]
         event[:metric] = v
         client << event
