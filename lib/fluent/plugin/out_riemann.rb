@@ -54,11 +54,11 @@ class Fluent::RiemannOutput < Fluent::BufferedOutput
         next unless v = remap(v)
 
         event = {
-          :time     => time,
-          :state    => 'ok',
-          :ttl      => 90,
-          :service] => k.gsub(/\./, ' '),
-          :metric]  => v,
+          :time    => time,
+          :state   => 'ok',
+          :ttl     => 90,
+          :service => k.gsub(/\./, ' '),
+          :metric  => v,
         }
 
         @fields.each { |f, i|
