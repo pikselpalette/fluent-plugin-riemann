@@ -58,11 +58,15 @@ class Fluent::RiemannOutput < Fluent::BufferedOutput
         next unless v = remap(v)
 
         event = {
-          :time    => time,
+          :time     => time,
+          :state    => 'ok',
+          :ttl      => 90,
+          :service] => k.gsub(/\./, ' '),
+          :metric]  => v,
         }
 
-        @fields.each { |k, v|
-          event[k.to_sym] = v
+        @fields.each { |k, i|
+          event[k.to_sym] = i
         }
 
         if @field_from_metric
@@ -72,8 +76,6 @@ class Fluent::RiemannOutput < Fluent::BufferedOutput
           end
         end
 
-        event[:service] = k.gsub(/\./, ' ') unless event[:service]
-        event[:metric] = v
         client << event
       }
     end
