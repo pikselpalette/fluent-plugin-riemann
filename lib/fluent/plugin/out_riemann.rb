@@ -16,10 +16,6 @@ class Fluent::RiemannOutput < Fluent::BufferedOutput
 
   def configure(c)
     super
-
-    if @fields_from_metric
-      @field_names = @fields_from_metric.split(',')
-    end
   end
 
   def start
@@ -65,14 +61,14 @@ class Fluent::RiemannOutput < Fluent::BufferedOutput
           :metric]  => v,
         }
 
-        @fields.each { |k, i|
-          event[k.to_sym] = i
+        @fields.each { |f, i|
+          event[f.to_sym] = i
         }
 
-        if @field_from_metric
+        if @fields_from_metric
           spots = k.split('.')
-          @field_names.each_with_index do |k, i|
-            event[k] = spots[i]
+          @fields_from_metric.split(',').each_with_index do |f, i|
+            event[f.to_sym] = spots[i]
           end
         end
 
