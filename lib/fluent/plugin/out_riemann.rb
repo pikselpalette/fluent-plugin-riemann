@@ -6,9 +6,10 @@ class Fluent::RiemannOutput < Fluent::BufferedOutput
   config_param :host,     :string,  :default => '127.0.0.1'
   config_param :port,     :integer, :default => 5555
   config_param :timeout,  :integer, :default => 5
+  config_param :ttl,      :integer, :default => 90
   config_param :protocol, :string,  :default => 'tcp'
   config_param :fields,   :hash,    :default => {}
-  config_param :fields_from_metric,  :string, :default => nil
+  config_param :fields_from_metric, :string, :default => nil
 
   def initialize
     super
@@ -56,7 +57,7 @@ class Fluent::RiemannOutput < Fluent::BufferedOutput
         event = {
           :time    => time,
           :state   => 'ok',
-          :ttl     => 90,
+          :ttl     => @ttl,
           :service => k.gsub(/\./, ' '),
           :metric  => v,
         }
