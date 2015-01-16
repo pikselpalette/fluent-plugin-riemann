@@ -59,7 +59,7 @@ class Fluent::RiemannOutput < Fluent::BufferedOutput
           :state   => 'ok',
           :ttl     => @ttl,
           :service => k.gsub(/\./, ' '),
-          :uptime  => Time.now - IO.read('/proc/uptime').split[0].to_i,
+          :uptime  => IO.read('/proc/uptime').split[0].to_i,
           :metric  => v,
         }
 
