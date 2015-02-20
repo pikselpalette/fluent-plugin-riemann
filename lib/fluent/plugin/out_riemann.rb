@@ -1,6 +1,7 @@
 require 'riemann/client'
 
 class Fluent::RiemannOutput < Fluent::BufferedOutput
+  class ConnectionFailure < StandardError; end
   Fluent::Plugin.register_output('riemann', self)
 
   config_param :host,     :string,  :default => '127.0.0.1'
@@ -74,7 +75,19 @@ class Fluent::RiemannOutput < Fluent::BufferedOutput
           end
         end
 
-        client << event
+        retries = 0
+        begin
+          client << event
+        rescue Exception => e
+          if retries < 2
+            retries += 1
+            log.warn "Could not push metrics to Riemann, resetting connection and trying again. #{e.message}"
+            @_client = nil
+            sleep 2**retries
+            retry
+          end
+          raise ConnectionFailure, "Could not push metrics to Riemann after #{retries} retries. #{e.message}"
+        end
       }
     end
   end
