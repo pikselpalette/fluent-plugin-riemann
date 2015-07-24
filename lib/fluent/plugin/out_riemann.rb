@@ -59,7 +59,6 @@ class Fluent::RiemannOutput < Fluent::BufferedOutput
           :time    => time,
           :state   => 'ok',
           :ttl     => @ttl,
-          :service => k.gsub(/\./, ' '),
           :uptime  => IO.read('/proc/uptime').split[0].to_i,
           :metric  => v,
         }
@@ -70,10 +69,15 @@ class Fluent::RiemannOutput < Fluent::BufferedOutput
 
         if @fields_from_metric
           spots = k.split('.')
-          @fields_from_metric.split(',').each_with_index do |f, i|
+          flds = @fields_from_metric.split(',')
+          flds.each_with_index do |f, i|
             event[f.to_sym] = spots[i]
           end
+          spots = spots[flds.length .. -1]
+          k = spots.join('.')
         end
+
+        event[:service] = k.gsub(/\./, ' ')
 
         retries = 0
         begin
