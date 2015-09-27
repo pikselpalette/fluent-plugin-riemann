@@ -55,6 +55,11 @@ class Fluent::RiemannOutput < Fluent::BufferedOutput
       record.each { |k, v|
         next unless v = remap(v)
 
+	if ( time.to_i + @ttl.to_i ) > Time.now.to_i
+          log.warn "Dropping event, past the ttl."
+          next
+        end
+
         event = {
           :time    => time,
           :state   => 'ok',
