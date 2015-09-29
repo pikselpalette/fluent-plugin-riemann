@@ -51,11 +51,12 @@ class Fluent::RiemannOutput < Fluent::BufferedOutput
   end
 
   def write(chunk)
+    now = Time.now.to_i
     chunk.msgpack_each do |tag, time, record|
       record.each { |k, v|
         next unless v = remap(v)
 
-	if ( time.to_i + @ttl.to_i ) > Time.now.to_i
+	if ( time.to_i + @ttl.to_i ) > now
           log.warn "Dropping event, past the ttl."
           next
         end
