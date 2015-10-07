@@ -56,7 +56,7 @@ class Fluent::RiemannOutput < Fluent::BufferedOutput
       record.each { |k, v|
         next unless v = remap(v)
 
-	if ( time.to_i + @ttl.to_i ) > now
+        if ( time.to_i + @ttl.to_i ) > now
           log.warn "Dropping event, past the ttl."
           next
         end
@@ -79,8 +79,12 @@ class Fluent::RiemannOutput < Fluent::BufferedOutput
           flds.each_with_index do |f, i|
             event[f.to_sym] = spots[i]
           end
-          spots = spots[flds.length .. -1]
-          k = spots.join('.')
+          if flds.include?('service')
+            k = event[:service]
+          else
+            spots = spots[flds.length .. -1]
+            k = spots.join('.')
+          end
         end
 
         event[:service] = k.gsub(/\./, ' ')
