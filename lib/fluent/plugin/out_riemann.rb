@@ -70,7 +70,7 @@ class Fluent::RiemannOutput < Fluent::BufferedOutput
           :metric  => v,
         }
         if (RbConfig::CONFIG['host_os'] !~ /mswin|mingw|cygwin/)
-          event[:uptime] = IO.read('/proc/uptime').split[0].to_i,
+          event[:uptime] = IO.read('/proc/uptime').split[0].to_i
         end
 
         @fields.each { |f, i|
