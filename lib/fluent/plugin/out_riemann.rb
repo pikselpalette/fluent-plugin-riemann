@@ -1,4 +1,5 @@
 require 'riemann/client'
+require 'rbconfig'
 
 class Fluent::RiemannOutput < Fluent::BufferedOutput
   class ConnectionFailure < StandardError; end
@@ -66,9 +67,11 @@ class Fluent::RiemannOutput < Fluent::BufferedOutput
           :time    => time,
           :state   => 'ok',
           :ttl     => @ttl,
-          :uptime  => IO.read('/proc/uptime').split[0].to_i,
           :metric  => v,
         }
+        if (RbConfig::CONFIG['host_os'] !~ /mswin|mingw|cygwin/)
+          event[:uptime] = IO.read('/proc/uptime').split[0].to_i,
+        end
 
         @fields.each { |f, i|
           event[f.to_sym] = i
