@@ -59,7 +59,7 @@ class Fluent::RiemannOutput < Fluent::BufferedOutput
         next unless v = remap(v)
 
         if time.to_i < expiretime
-          log.warn "Dropping event, past the ttl."
+          log.debug "Dropping event, past the ttl."
           next
         end
 
